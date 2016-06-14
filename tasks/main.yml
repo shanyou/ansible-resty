@@ -1,0 +1,4 @@
+---
+- name: Install openresty from source
+  include: install.yml
+  when: "ansible_local.resty is undefined or resty.deploy > ansible_local.resty.deploy"

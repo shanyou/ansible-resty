@@ -1,0 +1,17 @@
+#!/bin/bash
+# build resty from local with given prefix
+#
+# created: 2016-02-04
+# author: shanyou
+#
+
+PREFIX={{ resty.prefix }}
+pushd {{ resty.srcdir }}/openresty-{{resty.version}}
+./configure --prefix=$PREFIX \
+--with-pcre-jit \
+--with-cc-opt="-I/usr/local/include" \
+--with-ld-opt="-L/usr/local/lib" \
+--with-http_stub_status_module \
+--add-module=./bundle/nginx-http-sysguard/
+make && make install
+popd

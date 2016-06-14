@@ -1,0 +1,7 @@
+---
+  resty:
+    deploy: 1
+    version: 1.9.7.3
+    mainver: 1.9.7
+    prefix: /data/openresty
+    srcdir: /data/app

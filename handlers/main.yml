@@ -1,0 +1,12 @@
+---
+- name: restart resty
+  command: "{{ resty.prefix }}/nginx/sbin/run.sh reload"
+
+- name: stop resty
+  command: "{{ resty.prefix }}/nginx/sbin/run.sh stop"
+
+- name: start resty
+  command: "{{ resty.prefix }}/nginx/sbin/run.sh start"
+
+- name: test resty
+  command: "{{ resty.prefix }}/nginx/sbin/run.sh test"

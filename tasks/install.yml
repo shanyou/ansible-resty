@@ -1,0 +1,48 @@
+---
+  # install openresty by given version
+- name: Create source directory
+  file: path={{ resty.srcdir }} state=directory
+
+- name: Create prefixed directory
+  file: path={{ resty.prefix }} state=directory
+
+- name: Install deps library for compile
+  yum: name={{item}} state=latest
+  with_items:
+    - readline-devel
+    - pcre-devel
+    - openssl-devel
+
+#https://openresty.org/download/openresty-1.9.7.3.tar.gz
+- name: Download source file
+  get_url: url="https://openresty.org/download/openresty-{{resty.version}}.tar.gz" dest={{ resty.srcdir }}
+  register: dl_result
+  until: "'OK' in dl_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Extract source file
+  unarchive: src="{{ resty.srcdir }}/openresty-{{resty.version}}.tar.gz" dest={{ resty.srcdir }} copy=no
+
+- name: Download nginx-http-sysguard
+  git: repo=https://github.com/shanyou/nginx-http-sysguard.git dest="{{ resty.srcdir }}/openresty-{{resty.version}}/bundle/nginx-http-sysguard" version=shanyou
+
+- name: Apply patch for nginx
+  shell: "patch -p1 < ../nginx-http-sysguard/nginx_sysguard_{{ resty.mainver }}.patch"
+  args:
+    chdir: "{{ resty.srcdir }}/openresty-{{resty.version}}/bundle/nginx-{{ resty.mainver }}"
+
+- name: Copy build scripts
+  template: src=templates/build.sh.j2 dest={{ resty.srcdir }}/openresty-{{resty.version}}/build.sh mode=0755
+
+- name: Make and make install
+  shell: "{{ resty.srcdir }}/openresty-{{resty.version}}/build.sh"
+  async: 3000
+  poll: 5
+  register: make_result
+
+- name: Copy run scripts
+  template: src=templates/run.sh.j2 dest={{ resty.prefix }}/nginx/sbin/run.sh mode=0755
+
+- name: Install resty fact
+  copy: content="{{ resty }}" dest=/etc/ansible/facts.d/resty.fact

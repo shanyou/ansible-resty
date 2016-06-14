@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# control nginx start/stop
+#
+readonly WORK_DIR={{ resty.prefix }}/nginx/sbin
+readonly PID_FILE={{ resty.prefix }}/nginx/logs/nginx.pid
+readonly NGINX_BIN=./nginx
+
+# action list
+# start
+# stop
+# reload
+# test
+ACTION=${1:-"start"}
+
+# -------- functions ------------------
+function HELP() {
+  echo -e \\n"run nginx"
+  echo -e \\n"Usage:" "${BASH_SOURCE[0]} COMMAND"
+  echo -e \\n"COMMAND:"
+  echo -e \\t"start\\t\\tstart nginx"
+  echo -e \\t"stop\\t\\tstop nginx"
+  echo -e \\t"test\\t\\ttest nginx config"
+  echo -e \\t"reload\\t\\treload nginx config"
+  exit
+}
+function kill_ngx() {
+  ps aux | grep nginx | grep -v grep | awk '{print $2}' | xargs -n 1 kill -9
+}
+
+function start_ngx() {
+  $NGINX_BIN
+  exit $?
+}
+
+function test_conf_ngx() {
+  $NGINX_BIN -t
+  exit $?
+}
+
+function reload_ngx() {
+  if [ ! -f $PID_FILE ]; then
+    start_ngx
+    exit $?
+  fi
+
+  local pid=$(cat $PID_FILE)
+  if [ -e /proc/$pid ]; then
+    $NGINX_BIN -t
+    local test_res=$?
+    if [[ "$test_res" == "0" ]]; then
+      $NGINX_BIN -s reload
+    else
+      exit $test_res
+    fi
+  else
+    start_ngx
+  fi
+  exit $?
+}
+
+# --------- main -------------
+pushd $WORK_DIR
+
+case $ACTION in
+  start)
+    start_ngx
+    ;;
+  stop)
+    kill_ngx
+    ;;
+  test)
+    test_conf_ngx
+    ;;
+  reload)
+    reload_ngx
+    ;;
+  *)
+    HELP
+    ;;
+esac
+popd
