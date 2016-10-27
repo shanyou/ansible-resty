@@ -3,6 +3,9 @@
 - name: Create source directory
   file: path={{ resty.srcdir }} state=directory
 
+- name: Create fact directory
+  file: path=/etc/ansible/facts.d state=directory
+
 - name: Create prefixed directory
   file: path={{ resty.prefix }} state=directory
 
