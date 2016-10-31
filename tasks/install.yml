@@ -1,4 +1,6 @@
 ---
+- name: Install develpement tools
+  yum: name="@Development tools" state=present
   # install openresty by given version
 - name: Create source directory
   file: path={{ resty.srcdir }} state=directory
