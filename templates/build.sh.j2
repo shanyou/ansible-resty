@@ -8,6 +8,8 @@
 PREFIX={{ resty.prefix }}
 pushd {{ resty.srcdir }}/openresty-{{resty.version}}
 ./configure --prefix=$PREFIX \
+--add-module=./bundle/naxsi-untagged-afabfc163946baa8036f/naxsi_src/ \
+--with-http_realip_module \
 --with-pcre-jit \
 --with-cc-opt="-I/usr/local/include" \
 --with-ld-opt="-L/usr/local/lib" \
