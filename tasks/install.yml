@@ -26,8 +26,18 @@
   retries: 5
   delay: 10
 
+#https://github.com/nbs-system/naxsi/archive/untagged-afabfc163946baa8036f.tar.gz
+- name: Download naxsi file
+  get_url: url="https://github.com/nbs-system/naxsi/archive/untagged-afabfc163946baa8036f.tar.gz" dest={{ resty.srcdir }}
+  register: dl_result
+  until: "'OK' in dl_result.msg"
+  retries: 5
+  delay: 10
+
 - name: Extract source file
   unarchive: src="{{ resty.srcdir }}/openresty-{{resty.version}}.tar.gz" dest={{ resty.srcdir }} copy=no
+  unarchive: src="{{ resty.srcdir }}/naxsi-untagged-afabfc163946baa8036f" dest={{ resty.srcdir }}/bundle/ copy=no
+
 
 - name: Download nginx-http-sysguard
   git: repo=https://github.com/shanyou/nginx-http-sysguard.git dest="{{ resty.srcdir }}/openresty-{{resty.version}}/bundle/nginx-http-sysguard" version=shanyou
