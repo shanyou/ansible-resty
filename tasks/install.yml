@@ -36,7 +36,7 @@
 
 - name: Extract source file
   unarchive: src="{{ resty.srcdir }}/openresty-{{resty.version}}.tar.gz" dest={{ resty.srcdir }} copy=no
-  unarchive: src="{{ resty.srcdir }}/naxsi-untagged-afabfc163946baa8036f" dest={{ resty.srcdir }}/bundle/ copy=no
+  unarchive: src="{{ resty.srcdir }}/naxsi-untagged-afabfc163946baa8036f.tar.gz" dest={{ resty.srcdir }}/openresty-{{resty.version}}/bundle/ copy=no
 
 
 - name: Download nginx-http-sysguard
